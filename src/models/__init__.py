@@ -1,8 +1,5 @@
-from .standard import *
-from .transfer_learning import *
-from .custom import *
-from .common import *
-from .utils import *
+from .custom import Handfan_VGG16
+
 
 def get_model(model_name: str):
     models = {

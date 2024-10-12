@@ -1,0 +1,22 @@
+name: Handfan_VGG16
+
+batch_size: 8
+epochs: 200
+lr: 0.00001
+
+use_mixup: True
+mixup_alpha: 0.75
+augment_factor: 1
+mask_prob: 0.05
+apply_random: True
+window_size: 5
+
+model_param:
+  in_channels: 72
+  hid_dim: 128
+  num_classes: 3
+  dropout: 0.3
+
+scheduler:
+  milestones: [70, 100, 130, 155, 180]
+  gamma: 0.8
