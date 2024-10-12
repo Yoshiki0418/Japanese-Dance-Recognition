@@ -32,6 +32,7 @@ class Image_Dataset(Dataset):
         self.labels = labels
         self.transform = transform
         self.mode = mode
+        self.num_classes = 2
 
     def __len__(self) -> int:
         return len(self.image_paths)
