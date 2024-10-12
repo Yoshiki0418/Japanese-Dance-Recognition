@@ -4,3 +4,4 @@ test/
 train.ipynb
 *.pyc
 .DS_Store
+outputs/

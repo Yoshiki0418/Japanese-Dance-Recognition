@@ -1,0 +1,10 @@
+defaults:
+  - model: handfan_vgg
+
+project_name: Japanese-Dance-Recognition
+
+num_workers: 2
+
+device: cuda:0
+seed: 1234
+use_wandb: False

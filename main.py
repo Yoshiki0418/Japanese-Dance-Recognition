@@ -8,10 +8,13 @@ from termcolor import cprint
 import torch
 from tqdm import tqdm
 from torchmetrics import Accuracy, F1Score
+from sklearn.model_selection import train_test_split
+from torchvision import transforms
 
 from src.utils import set_seed
 from src.models import get_model
-from src.datasets import Image_Dataset
+from src.data.datasets import Image_Dataset
+from src.data.get_path import get_image_paths_and_labels
 from src.visualizations import loss_curve_plotter
 from tools import *
 
@@ -26,10 +29,22 @@ def run(args: DictConfig):
     #--------------------------------
     loader_args = {"batch_size": args.model.batch_size, "num_workers": args.num_workers}
 
-    train_set = Image_Dataset()
+    image_paths, labels = get_image_paths_and_labels("train")
+
+
+    train_paths, val_paths, train_labels, val_labels = train_test_split(
+        image_paths, labels, test_size=0.2, stratify=labels, random_state=42
+    )
+
+    transform = transforms.Compose([
+        transforms.Resize((128, 128)),  
+        transforms.ToTensor()     
+    ])
+
+    train_set = Image_Dataset("train", train_paths, train_labels, transform=transform)
     train_loader = torch.utils.data.DataLoader(train_set, **loader_args, shuffle=True)
 
-    val_set = Image_Dataset()
+    val_set = Image_Dataset("val", val_paths, val_labels, transform=transform)
     val_loader = torch.utils.data.DataLoader(val_set, **loader_args, shuffle=False)
 
     #--------------------------------
