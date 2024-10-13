@@ -37,7 +37,7 @@ def run(args: DictConfig):
     )
 
     transform = transforms.Compose([
-        transforms.Resize((128, 128)),  
+        transforms.Resize((224, 224)),  
         transforms.ToTensor()     
     ])
 
@@ -54,7 +54,7 @@ def run(args: DictConfig):
     
     model_params = args.model.model_param
 
-    model = ModelClass(train_set.seq_length, **model_params).to(args.device)
+    model = ModelClass().to(args.device)
 
     #--------------------------------
     #          Optimizer
@@ -73,11 +73,11 @@ def run(args: DictConfig):
     #--------------------------------
     max_val_f1 = 0
     accuracy = Accuracy(
-        task="multiclass", num_classes=train_set.numof_classes
+        task="multiclass", num_classes=train_set.num_classes
     ).to(args.device)
 
     f1_score = F1Score(
-        task="multiclass", num_classes=train_set.numof_classes, average="macro"
+        task="multiclass", num_classes=train_set.num_classes, average="macro"
     ).to(args.device)
 
 
@@ -94,8 +94,8 @@ def run(args: DictConfig):
         train_loss, train_acc, val_loss, val_acc, train_f1, val_f1 = [], [], [], [], [], []
 
         model.train()
-        for data in tqdm(train_loader, desc="Train"):
-            X, y = data['seq'].to(args.device), data['label'].to(args.device)
+        for X, y in tqdm(train_loader, desc="Train"):
+            X, y = X.to(args.device), y.to(args.device)
 
             y_pred = model(X)
 
@@ -116,8 +116,8 @@ def run(args: DictConfig):
 
         model.eval()
 
-        for data in tqdm(val_loader, desc="Validation"):
-            X, y = data['seq'].to(args.device), data['label'].to(args.device)
+        for X, y in tqdm(val_loader, desc="Validation"):
+            X, y = X.to(args.device), y.to(args.device)
 
             with torch.no_grad():
                 y_pred = model(X)
