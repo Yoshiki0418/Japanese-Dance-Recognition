@@ -10,12 +10,13 @@ from tqdm import tqdm
 from torchmetrics import Accuracy, F1Score
 from sklearn.model_selection import train_test_split
 from torchvision import transforms
+from pathlib import Path
 
 from src.utils import set_seed
 from src.models import get_model
 from src.data.datasets import Image_Dataset
 from src.data.get_path import get_image_paths_and_labels
-from src.visualizations import loss_curve_plotter
+from src.visualizations import *
 from tools import *
 
 
@@ -30,6 +31,8 @@ def run(args: DictConfig):
     loader_args = {"batch_size": args.model.batch_size, "num_workers": args.num_workers}
 
     image_paths, labels = get_image_paths_and_labels("train")
+
+    class_labels = ["not-hold", "hold"]
 
 
     train_paths, val_paths, train_labels, val_labels = train_test_split(
@@ -115,7 +118,8 @@ def run(args: DictConfig):
         scheduler.step()
 
         model.eval()
-
+        y_true_list = []
+        y_pred_list = []
         for X, y in tqdm(val_loader, desc="Validation"):
             X, y = X.to(args.device), y.to(args.device)
 
@@ -131,17 +135,30 @@ def run(args: DictConfig):
             v_f1 = f1_score(y_pred, y)
             val_f1.append(v_f1.item())
 
+            y_true_list.append(y.cpu().numpy()) 
+            y_pred_list.append(torch.argmax(y_pred, dim=1).cpu().numpy()) 
+
+        y_true_list = np.concatenate(y_true_list).ravel()
+        y_pred_list = np.concatenate(y_pred_list).ravel()
+
+        y_true_mapped = [class_labels[label - 1] for label in y_true_list]       
+        y_pred_mapped = [class_labels[label - 1] for label in y_pred_list]
+
         print(f"Epoch {epoch+1}/{args.model.epochs} | train loss: {np.mean(train_loss):.3f} | train acc: {np.mean(train_acc):.3f} | train f1: {np.mean(train_f1):.3f} | val loss: {np.mean(val_loss):.3f} | val acc: {np.mean(val_acc):.3f} | val f1: {np.mean(val_f1):.3f}")
 
 
         torch.save(model.state_dict(), os.path.join(logdir, "model_last.pt"))
-        if args.use_wandb:
-            wandb.log({"train_loss": np.mean(train_loss), "train_acc": np.mean(train_acc), "train_f1": np.mean(train_f1), "val_loss": np.mean(val_loss), "val_acc": np.mean(val_acc), "val_f1": np.mean(val_f1)})
         
         if np.mean(val_f1) > max_val_f1:
             cprint("New best.", "cyan")
             torch.save(model.state_dict(), os.path.join(logdir, "model_best.pt"))
             max_val_f1 = np.mean(val_f1)
+            calculate_confusion_matrix(
+                y_true_mapped,
+                y_pred_mapped, 
+                Path(logdir) / "best_confusion_matrix.png",
+                class_labels,
+            )
 
         train_loss_history.append(np.mean(train_loss))
         val_loss_history.append(np.mean(val_loss))
