@@ -49,7 +49,7 @@ def run(args: DictConfig):
 
   # -----提出-----
   current_date = datetime.now().strftime("%Y%m%d")
-  filename = f"{args.model.name}_submission_{current_date}.csv"
+  filename = f"outputs/{args.model.name}_submission_{current_date}.csv"
 
   # CSVファイル作成
   submission_df = pd.DataFrame(list(zip(image_paths_list, predictions_list))) 
