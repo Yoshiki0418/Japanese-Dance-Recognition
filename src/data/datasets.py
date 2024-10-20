@@ -42,6 +42,8 @@ class Image_Dataset(Dataset):
 
         image = Image.open(img_path).convert("RGB")
 
+        clean_image_path = img_path.replace("test/", "")
+
         if self.transform:
             image = self.transform(image)
 
@@ -49,6 +51,6 @@ class Image_Dataset(Dataset):
             label = self.labels[index]
             return image, label
         elif self.mode == "test":
-            return image
+            return image, clean_image_path
         else:
             raise ValueError(f"Invalid mode: {self.mode}. Expected 'train' or 'val' or 'test'.")

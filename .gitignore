@@ -5,3 +5,4 @@ train.ipynb
 *.pyc
 .DS_Store
 outputs/
+sample_submit.csv
