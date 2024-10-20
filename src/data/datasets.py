@@ -49,6 +49,6 @@ class Image_Dataset(Dataset):
             label = self.labels[index]
             return image, label
         elif self.mode == "test":
-            return image
+            return image, img_path
         else:
             raise ValueError(f"Invalid mode: {self.mode}. Expected 'train' or 'val' or 'test'.")

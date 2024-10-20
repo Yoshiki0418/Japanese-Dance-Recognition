@@ -21,41 +21,44 @@ def run(args: DictConfig):
       transforms.ToTensor()     
   ])
   test_set = Image_Dataset("test", test_path, transform=transform)
-  test_loader = torch.utils.data.DataLoader(test_set, **loader_args, shuffle=True)
+  test_loader = torch.utils.data.DataLoader(test_set)
 
   # -----model-----
 
   ModelClass = get_model(args.model.name)
   model=ModelClass().to(args.device)
-  model.load_state_dict(torch.load('outputs/2024-10-16/20-43-30/model_best.pt',map_location=torch.device('cpu'))) 
+  model.load_state_dict(torch.load('/content/drive/MyDrive/Deep_Learning/Japanese-Dance-Recognition/outputs/2024-10-13/07-33-36/model_best.pt',map_location=torch.device('cpu'))) 
 
 
   # -----推論-----
-  i=0
   predictions_list=[]
+  image_paths_list = []
 
   model.eval()
 
   with torch.no_grad():
-      for test in test_loader:
-          i=i+1
-          test = test.to(args.device)
+      for test_batch in test_loader:
+          images, image_paths = test_batch
+          images = images.to(args.device)
 
-          predict = model(test)
+          predict = model(images)
           predicted_labels = torch.argmax(predict, dim=1).cpu().numpy()
-          predictions_list.append(predicted_labels)
-          if i==2:
-              break
 
+          predictions_list.extend(predicted_labels)
+          image_paths_list.extend(image_paths)
 
   # -----提出-----
-  print(len(predictions_list))
   current_date = datetime.now().strftime("%Y%m%d")
   filename = f"{args.model.name}_submission_{current_date}.csv"
 
-  sample=pd.read_csv('sample_submit.csv')
-  sample.iloc[:,1]=predictions_list
-  sample.to_csv(filename, index=False)
+  # CSVファイル作成
+  submission_df = pd.DataFrame({
+      0: image_paths_list, 
+      1: predictions_list   
+  })
+  
+  submission_df.to_csv(filename, index=False, header=False) 
+  print(f"Submission file saved as {filename}")
 
 if __name__ == "__main__":
     run()
