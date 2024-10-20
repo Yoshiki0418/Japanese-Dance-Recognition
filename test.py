@@ -52,10 +52,7 @@ def run(args: DictConfig):
   filename = f"{args.model.name}_submission_{current_date}.csv"
 
   # CSVファイル作成
-  submission_df = pd.DataFrame({
-      0: image_paths_list, 
-      1: predictions_list   
-  })
+  submission_df = pd.DataFrame(list(zip(image_paths_list, predictions_list))) 
   
   submission_df.to_csv(filename, index=False, header=False) 
   print(f"Submission file saved as {filename}")
