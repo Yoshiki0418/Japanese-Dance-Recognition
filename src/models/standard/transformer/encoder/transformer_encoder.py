@@ -12,11 +12,13 @@ class Transformer_Encoder(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, X):
-        X_norm1 = self.norm(X)
+        X_t = rearrange(X, 'b c l -> b l c')
+        X_norm1 = self.norm(X_t)
+        X_norm1 = rearrange(X_norm1, 'b l c -> b c l')
         X_norm1 = self.attn(X_norm1)
         X2 = X + self.dropout(X_norm1)
-        X_norm2 = self.norm(X2)
-        X_norm2 = rearrange(X_norm2, "b c l -> b l c")
+        X2_t = rearrange(X2, 'b c l -> b l c')
+        X_norm2 = self.norm(X2_t)
         X_norm2 = self.ffn(X_norm2)
         X_norm2 = self.dropout(X_norm2)
         X_norm2 = rearrange(X_norm2, "b l c -> b c l")

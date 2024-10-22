@@ -60,7 +60,7 @@ class Handfan_ViT(nn.Module):
         x = self.dropout(x)
 
         x = x.permute(0, 2, 1)
-
+        print(x.shape)
         x = self.transformer_encoder(x)
 
         # CLSトークンの抽出
