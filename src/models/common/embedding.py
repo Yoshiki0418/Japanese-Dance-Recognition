@@ -68,7 +68,7 @@ class Patch_Embedding(nn.Module):
         return x
 
     def _tupler(t: int | tuple[int, int]) -> tuple[int, int]:
-        if isinstance(tuple, t):
+        if isinstance(t, tuple):
             return t
         else:
             return (t, t)

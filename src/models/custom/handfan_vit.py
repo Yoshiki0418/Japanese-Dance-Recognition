@@ -45,7 +45,7 @@ class Handfan_ViT(nn.Module):
 
 
     def _tupler(t: int | tuple[int, int]) -> tuple[int, int]:
-            if isinstance(tuple, t):
+            if isinstance(t, tuple):
                 return t
             else:
                 return (t, t)
