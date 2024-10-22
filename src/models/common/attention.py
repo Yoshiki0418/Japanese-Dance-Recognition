@@ -9,7 +9,7 @@ from src.models.utils.masking import TriangularCausalMask
 #--------------------------------
 #   Multi-Head Self-Attention
 #--------------------------------
-class MultiHead_Attention(nn.Module):
+class MultiHead_Self_Attention(nn.Module):
     """
     dim : int
         入力データの次元数．埋め込み次元数と一致する．
