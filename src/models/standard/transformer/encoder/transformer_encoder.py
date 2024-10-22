@@ -23,4 +23,5 @@ class Transformer_Encoder(nn.Module):
         X_norm2 = self.dropout(X_norm2)
         X_norm2 = rearrange(X_norm2, "b l c -> b c l")
         output = X2 + X_norm2
+        output = rearrange(output, "b c l -> b l c")
         return output
