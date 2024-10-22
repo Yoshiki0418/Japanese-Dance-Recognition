@@ -59,6 +59,8 @@ class Handfan_ViT(nn.Module):
         print(f"Positional Embedding output shape: {x.shape}")
         x = self.dropout(x)
 
+        x = x.permute(0, 2, 1)
+
         x = self.transformer_encoder(x)
 
         # CLSトークンの抽出
