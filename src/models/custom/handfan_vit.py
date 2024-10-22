@@ -52,8 +52,11 @@ class Handfan_ViT(nn.Module):
 
     def forward(self, img: torch.Tensor) -> torch.Tensor:
         x = self.patch_emb(img)
+        print(f"Patch Embedding output shape: {x.shape}")
         x = self.cls_tokens(x)
+        print(f"cls Embedding output shape: {x.shape}")
         x = self.pos_emb(x)
+        print(f"Positional Embedding output shape: {x.shape}")
         x = self.dropout(x)
 
         x = self.transformer_encoder(x)
