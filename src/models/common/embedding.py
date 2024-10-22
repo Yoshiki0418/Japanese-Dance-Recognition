@@ -67,7 +67,7 @@ class Patch_Embedding(nn.Module):
         x = self.patch_embedding(img)
         return x
 
-    def _tupler(t: int | tuple[int, int]) -> tuple[int, int]:
+    def _tupler(self, t: int | tuple[int, int]) -> tuple[int, int]:
         if isinstance(t, tuple):
             return t
         else:

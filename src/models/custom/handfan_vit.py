@@ -44,7 +44,7 @@ class Handfan_ViT(nn.Module):
         self.mlp_head = nn.Linear(dim, num_classes)
 
 
-    def _tupler(t: int | tuple[int, int]) -> tuple[int, int]:
+    def _tupler(self, t: int | tuple[int, int]) -> tuple[int, int]:
         if isinstance(t, tuple):
             return t
         else:
