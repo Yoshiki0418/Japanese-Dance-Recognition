@@ -45,10 +45,10 @@ class Handfan_ViT(nn.Module):
 
 
     def _tupler(t: int | tuple[int, int]) -> tuple[int, int]:
-            if isinstance(t, tuple):
-                return t
-            else:
-                return (t, t)
+        if isinstance(t, tuple):
+            return t
+        else:
+            return (t, t)
 
     def forward(self, img: torch.Tensor) -> torch.Tensor:
         x = self.patch_emb(img)
