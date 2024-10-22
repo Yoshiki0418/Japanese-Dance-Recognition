@@ -28,7 +28,8 @@ class MultiHead_Self_Attention(nn.Module):
         self.to_qkv = nn.Conv1d(dim, hidden_dim * 3, 1)
         self.to_out = nn.Conv1d(hidden_dim, dim, 1)
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = x.permute(0, 2, 1)
         b, c, l = x.shape
         qkv = self.to_qkv(x).chunk(3, dim=1) # 線形変換
         q, k, v = [rearrange(t, "b (h d) l -> b h d l", h=self.heads) for t in qkv]
