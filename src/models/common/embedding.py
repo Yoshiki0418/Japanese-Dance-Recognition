@@ -109,7 +109,7 @@ class Extra_learnable_Embedding(nn.Module):
     def __init__(self, dim: int) -> None:
         super().__init__()
 
-        self.emb = nn.Parameter(torch.randn(1, 1, dim))
+        self.cls_token = nn.Parameter(torch.randn(1, 1, dim))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         b, _, _ = x.shape
