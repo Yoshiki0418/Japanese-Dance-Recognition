@@ -1,5 +1,5 @@
 defaults:
-  - model: handfan_vgg
+  - model: handfan_vit
 
 project_name: Japanese-Dance-Recognition
 

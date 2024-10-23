@@ -7,11 +7,10 @@ import torch.nn.functional as F
 import math
 from src.models.common import *
 
-class iTransformer(nn.Module):
+class iTransformer_Encoder(nn.Module):
     def __init__(
         self,
         d_model: int,
-        seq_len: int,
         n_heads: int,
         dropout: float = 0.3,
         activation: str = "relu",
@@ -20,7 +19,6 @@ class iTransformer(nn.Module):
     ) -> None:
         super().__init__()
         self.use_norm = use_norm
-        self.embedding = DataEmbedding_inverted(seq_len, d_model, dropout)
         self.attn = MultiVariate_Attention(d_model=d_model, n_heads=n_heads)
         
         d_ff = d_ff or 4 * d_model
@@ -33,29 +31,7 @@ class iTransformer(nn.Module):
 
         self.activation = F.relu if activation == "relu" else F.gelu
 
-    def forward(self, x_enc, x_mark_enc=None, attn_mask=None) -> torch.Tensor:
-        """
-        x_enc: [Batch, Variate, Time]
-        """
-        if self.use_norm:
-            # Normalization from Non-stationary Transformer
-            means = x_enc.mean(1, keepdim=True).detach()
-            x_enc = x_enc - means
-            stdev = torch.sqrt(torch.var(x_enc, dim=1, keepdim=True, unbiased=False) + 1e-5)
-            x_enc /= stdev
-        
-        _, N, _ = x_enc.shape # B N L
-
-        """
-        B: batch_size;    E: d_model; 
-        L: seq_len;       S: pred_len;
-        N: number of variate (tokens), can also includes covariates
-        """
-
-        # Embedding
-        # B L N -> B N E                (B L N -> B L E in the vanilla Transformer)
-        x = self.embedding(x_enc, x_mark_enc) # covariates (e.g timestamp) can be also embedded as tokens
-        
+    def forward(self, x, attn_mask=None) -> torch.Tensor:
         # B N E -> B N E                (B L E -> B L E in the vanilla Transformer)
         # the dimensions of embedded time series has been inverted, and then processed by native attn, layernorm and ffn modules
         new_x, attns = self.attn(x, x, x, attn_mask = attn_mask)
@@ -73,11 +49,10 @@ class iTransformer(nn.Module):
 #--------------------------------
 #      pre-LN構造
 #--------------------------------
-class iTransformer_preLN(nn.Module):
+class iTransformer_Encoder_preLN(nn.Module):
     def __init__(
         self,
         d_model: int,
-        seq_len: int,
         n_heads: int,
         dropout: float = 0.3,
         activation: str = "relu",
@@ -86,7 +61,6 @@ class iTransformer_preLN(nn.Module):
     ) -> None:
         super().__init__()
         self.use_norm = use_norm
-        self.embedding = DataEmbedding_inverted(seq_len, d_model, dropout)
         self.attn = MultiVariate_Attention(d_model=d_model, n_heads=n_heads)
         
         d_ff = d_ff or 4 * d_model
@@ -99,29 +73,7 @@ class iTransformer_preLN(nn.Module):
 
         self.activation = F.relu if activation == "relu" else F.gelu
 
-    def forward(self, x_enc, x_mark_enc=None, attn_mask=None) -> torch.Tensor:
-        """
-        x_enc: [Batch, Variate, Time]
-        """
-        if self.use_norm:
-            # Normalization from Non-stationary Transformer
-            means = x_enc.mean(1, keepdim=True).detach()
-            x_enc = x_enc - means
-            stdev = torch.sqrt(torch.var(x_enc, dim=1, keepdim=True, unbiased=False) + 1e-5)
-            x_enc /= stdev
-        
-        _, N, _ = x_enc.shape # B N L
-
-        """
-        B: batch_size;    E: d_model; 
-        L: seq_len;       S: pred_len;
-        N: number of variate (tokens), can also includes covariates
-        """
-
-        # Embedding
-        # B L N -> B N E                (B L N -> B L E in the vanilla Transformer)
-        x = self.embedding(x_enc, x_mark_enc) # covariates (e.g timestamp) can be also embedded as tokens
-
+    def forward(self, x, attn_mask=None) -> torch.Tensor:
         x = self.norm0(x)
         
         # B N E -> B N E                (B L E -> B L E in the vanilla Transformer)

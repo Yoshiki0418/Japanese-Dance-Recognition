@@ -4,5 +4,8 @@ from .transformer import *
 from .LSTM import *
 
 __all__ = [
-    "Handfan_VGG16",
+    "VGG16",
+    "Transformer_Encoder",
+    "iTransformer_Encoder_preLN",
+    "iTransformer_Encoder",
 ]

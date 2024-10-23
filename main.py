@@ -57,7 +57,7 @@ def run(args: DictConfig):
     
     model_params = args.model.model_param
 
-    model = ModelClass().to(args.device)
+    model = ModelClass(**model_params).to(args.device)
 
     #--------------------------------
     #          Optimizer

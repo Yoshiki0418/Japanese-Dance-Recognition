@@ -9,7 +9,7 @@ from src.models.utils.masking import TriangularCausalMask
 #--------------------------------
 #   Multi-Head Self-Attention
 #--------------------------------
-class MultiHead_Attention(nn.Module):
+class MultiHead_Self_Attention(nn.Module):
     """
     dim : int
         入力データの次元数．埋め込み次元数と一致する．
@@ -28,7 +28,7 @@ class MultiHead_Attention(nn.Module):
         self.to_qkv = nn.Conv1d(dim, hidden_dim * 3, 1)
         self.to_out = nn.Conv1d(hidden_dim, dim, 1)
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         b, c, l = x.shape
         qkv = self.to_qkv(x).chunk(3, dim=1) # 線形変換
         q, k, v = [rearrange(t, "b (h d) l -> b h d l", h=self.heads) for t in qkv]
