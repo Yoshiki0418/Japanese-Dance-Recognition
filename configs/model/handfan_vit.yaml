@@ -1,0 +1,27 @@
+name: Handfan_ViT
+
+batch_size: 8
+epochs: 20
+lr: 0.00001
+
+use_mixup: True
+mixup_alpha: 0.75
+augment_factor: 1
+mask_prob: 0.05
+apply_random: True
+window_size: 5
+
+model_param:
+  dim: 512
+  heads: 8
+  channels: 3
+  image_size: 224
+  patch_size: 16
+  dim_head: 64
+  dropout: 0.3
+  emb_drop: 0.2
+  num_classes: 2
+
+scheduler:
+  milestones: [70, 100, 130, 155, 180]
+  gamma: 0.8

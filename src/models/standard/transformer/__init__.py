@@ -1,8 +1,8 @@
-from .transformer import Transformer
-from .itransformer import iTransformer, iTransformer_preLN
+from .encoder.transformer_encoder import *
+from .encoder.itransformer_encoder import *
 
 __all__ = [
-    "Transformer",
-    "iTransformer",
-    "iTransformer_preLN"
+    "Transformer_Encoder",
+    "iTransformer_Encoder_preLN",
+    "iTransformer_Encoder"
 ]
